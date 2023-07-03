@@ -7,14 +7,17 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.catsgram.model.Post;
 import java.util.ArrayList;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @RestController
 public class PostController {
-
+    private static final Logger log = LoggerFactory.getLogger(PostController.class);
     private final List<Post> posts = new ArrayList<>();
 
     @GetMapping("/posts")
     public List<Post> findAll() {
+        log.debug("Текущее количество постов: {}", posts.size());
         return posts;
     }
 
