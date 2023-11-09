@@ -2,9 +2,10 @@ package ru.yandex.practicum.catsgram.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.catsgram.model.Post;
 import ru.yandex.practicum.catsgram.model.User;
+import ru.yandex.practicum.catsgram.service.UserService;
 
 import java.util.*;
 
@@ -13,51 +14,33 @@ import java.util.*;
 public class UserController {
 
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
+    private final UserService userService;
 
-    private final Map<String, User> users = new HashMap<>();
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping
     public Collection<User> findAll() {
         logger.info("Request received: GET /users");
         // Логирование количества пользователей
-        logger.info("Current number of users: {}", users.size());
-        return users.values();
+        logger.info("Current number of users: {}", userService.findAll().size());
+        return userService.findAll();
     }
 
     @PostMapping
-    public User addUser(@RequestBody User user) throws UserAlreadyExistException, InvalidEmailException {
+    public User addUser(@RequestBody User user) {
         logger.info("Request received: POST /users");
-        if (user.getEmail() == null || user.getEmail().isBlank()) {
-            throw new InvalidEmailException("Адрес электронной почты не может быть пустым.");
-        }
-
-        if (users.containsKey(user.getEmail())) {
-            throw new UserAlreadyExistException("Пользователь с электронной почтой " +
-                    user.getEmail() + " уже зарегистрирован.");
-        }
+        userService.addUser(user);
         logger.info("New user: {}", user);
-        users.put(user.getEmail(), user);
         return user;
     }
 
     @PutMapping
-    public User put(@RequestBody User user) throws InvalidEmailException {
-        if (user.getEmail() == null || user.getEmail().isBlank()) {
-            throw new InvalidEmailException("Адрес электронной почты не может быть пустым.");
-        }
-        users.put(user.getEmail(), user);
+    public User put(@RequestBody User user) {
+        userService.put(user);
         return user;
     }
 
-    class UserAlreadyExistException extends Exception {
-        public UserAlreadyExistException(String message) {
-            super(message);
-        }
-    }
-
-    class InvalidEmailException extends Exception {
-        public InvalidEmailException(String message) {
-            super(message);
-        }
-    }
 }
