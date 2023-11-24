@@ -7,6 +7,7 @@ import ru.yandex.practicum.catsgram.model.User;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class UserService {
     private final Map<String, User> users = new HashMap<>();
@@ -33,5 +34,9 @@ public class UserService {
         }
         users.put(user.getEmail(), user);
         return user;
+    }
+
+    public User getUserByEmail(String email) {
+        return users.get(email);
     }
 }
