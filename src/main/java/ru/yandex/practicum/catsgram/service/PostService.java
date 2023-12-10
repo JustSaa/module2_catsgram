@@ -18,7 +18,7 @@ public class PostService {
     public List<Post> findAll(String sort, Integer size, Integer from) {
         return posts.stream().sorted((p0, p1) -> {
             int comp = p0.getCreationDate().compareTo(p1.getCreationDate()); //прямой порядок сортировки
-            if(sort.equals("desc")){
+            if (sort.equals("desc")) {
                 comp = -1 * comp; //обратный порядок сортировки
             }
             return comp;
@@ -53,5 +53,15 @@ public class PostService {
                 .filter(post -> post.getCreationDate().atZone(ZoneId.systemDefault()).toLocalDate().isAfter(from))
                 .filter(post -> post.getCreationDate().atZone(ZoneId.systemDefault()).toLocalDate().isBefore(to))
                 .collect(Collectors.toList());
+    }
+
+    public List<Post> findAllByUserEmail(String email, Integer size, String sort) {
+        return posts.stream().filter(p -> email.equals(p.getAuthor())).sorted((p0, p1) -> {
+            int comp = p0.getCreationDate().compareTo(p1.getCreationDate()); //прямой порядок сортировки
+            if (sort.equals("desc")) {
+                comp = -1 * comp; //обратный порядок сортировки
+            }
+            return comp;
+        }).limit(size).collect(Collectors.toList());
     }
 }
